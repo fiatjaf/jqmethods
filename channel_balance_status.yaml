@@ -1,0 +1,18 @@
+description: |
+  Gives a quick overview of channel balance status.
+  Good in conjunction with rebalancing tools.
+rpc: listpeers
+filter: |
+  .peers | map(select((.channels | length) > 0 and .connected)) | map
+  ( .channels | map(select(.msatoshi_to_us > 0 and .msatoshi_total - .msatoshi_to_us > 0))
+    | map
+    (
+      { short_channel_id
+      , us: (.msatoshi_to_us/1000)
+      , them: ((.msatoshi_total - .msatoshi_to_us)/1000)
+      , status
+      }
+      | .balance = if .us < (.them/2) then "low here" else if .them < (.us/2) then "low there" else "balanced" end end
+    )
+    | .[0] | select(.)
+  ) | sort_by(.us)
