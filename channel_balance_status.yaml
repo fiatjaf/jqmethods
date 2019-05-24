@@ -1,6 +1,7 @@
 description: |
-  Gives a quick overview of channel balance status.
-  Good in conjunction with rebalancing tools.
+  Gives a quick overview of all your online channel balance statuses.
+
+  Good for spotting targets for rebalancing tools like https://github.com/lightningd/plugins/tree/master/rebalance.
 rpc: listpeers
 filter: |
   .peers | map(select((.channels | length) > 0 and .connected)) | map
