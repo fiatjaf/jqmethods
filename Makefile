@@ -1,4 +1,4 @@
-README.md: $(find -name="*.yaml")
+README.md: $(shell find . -name "*.yaml")
 	echo '### Available _jq methods_:' > README.md
 	echo '' >> README.md
 	for m in $$(ls *.yaml); do \
