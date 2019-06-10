@@ -13,11 +13,14 @@ README.md: $(shell find . -name "*.yaml")
     end;
 
 methods.png: $(shell find . -name "*.yaml")
-	text=""
-	for m in $$(ls *.yaml); do \
-      text+="\n"; \
-      text+="<span font_family='monospace'>$$(echo $$m | tr "." "\n" | head -n 1)</span>\n"; \
-      text+="<small>$$(yq.v2 read $$m description | perl -p -e 's/\n/\n/g')</small>\n\n"; \
-    done;
-	echo $$text
-	convert pango:$$text methods.png
+	set text ''
+	for m in (ls *.yaml); \
+      set text "$$text\n"; \
+      set name (echo $$m | tr "." "\n" | head -n 1); \
+      set text "$$text<span font_family='monospace'>$$name</span>\n"; \
+      set desc (yq.v2 read $$m description | head -n 1); \
+      echo $$desc; \
+      set text "$$text<small>$$desc</small>\n\n"; \
+    end; \
+	echo $$text; \
+	convert pango:$$text methods.png;
