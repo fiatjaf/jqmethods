@@ -8,11 +8,10 @@ filter: |
   | 100000000000 as $unit
   | ($complete | reduce .[] as $pay (0; . + $pay.msatoshi)) as $total_paid
   | ($complete | reduce .[] as $pay (0; . + $pay.msatoshi_sent - $pay.msatoshi)) as $total_fees_paid
-  | {
-      unit: "btc",
-      total_paid: ($total_paid / $unit),
-      total_fees_paid: ($total_fees_paid / $unit),
-      fee_percent: (($total_fees_paid / $total_paid) * 10000 | floor | . / 100 | "\(.)%"),
-      complete_payments: ($complete | length),
-      failed_payments: ($failed | length),
+  | { unit: "btc"
+    , total_paid: ($total_paid / $unit)
+    , total_fees_paid: ($total_fees_paid / $unit)
+    , fee_percent: (($total_fees_paid / $total_paid) * 10000 | floor | . / 100 | "\(.)%")
+    , complete_payments: ($complete | length)
+    , failed_payments: ($failed | length)
     }

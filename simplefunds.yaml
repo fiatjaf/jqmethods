@@ -1,0 +1,19 @@
+description: |
+  Shows a quick overview of total funds, both in channels and in unspent transaction outputs.
+
+  Mimics the functionality of renepickhardt's [`funds`](https://github.com/renepickhardt/c-lightning-plugin-collection/tree/master/simpleFundsOverview) Python plugin.
+rpc: listfunds
+filter: |
+  { btc: 100000000, sat: 1 } as $units
+  | (.outputs | reduce .[] as $utxo (0; . + $utxo.value)) as $onchain
+  | (.channels | reduce .[] as $chan (0; . + $chan.channel_sat)) as $offchain
+  | ($onchain + $offchain) as $total
+  | (if $total > $units.btc / 1000 then "btc" else "sat" end | {name: ., size: $units[.]}) as $unit
+  | (.channels | length) as $num_channels
+  | { unit: $unit.name
+    , total: ($total / $unit.size)
+    , onchain: ($onchain / $unit.size)
+    , offchain: ($offchain / $unit.size)
+    , num_channels: $num_channels
+    , average_channel_size: (($offchain / $num_channels) / $unit.size | . * 100000 | floor | . / 100000)
+    }
